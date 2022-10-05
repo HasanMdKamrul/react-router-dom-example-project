@@ -1,11 +1,15 @@
 import React from 'react';
-import { Link, Outlet, useLoaderData } from 'react-router-dom';
-import { getContacts } from '../contacts';
+import { Form, Link, Outlet, useLoaderData } from 'react-router-dom';
+import { createContact, getContacts } from '../contacts';
 
 export async function loader (){
     const contactsArray = await getContacts();
     return {contacts : contactsArray};
 };
+
+export async function action (){
+     await  createContact();
+}
 
 
 
@@ -37,9 +41,9 @@ const Root = () => {
                   aria-live="polite"
                 ></div>
               </form>
-              <form method="post">
+              <Form method="post">
                 <button type="submit">New</button>
-              </form>
+              </Form>
             </div>
             <nav>
           {contacts.length ? (
