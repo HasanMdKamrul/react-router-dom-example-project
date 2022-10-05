@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { getContact } from './contacts'
 import ErrorPage from './error-page'
 import './index.css'
 import Contact from './routes/contact'
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     children:[
       {
         path: 'contacts/:contactId',
+        loader : async ({params:{contactId}}) => getContact(contactId),
         element: <Contact/>
       },
     ],

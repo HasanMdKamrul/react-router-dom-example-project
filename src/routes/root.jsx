@@ -16,7 +16,7 @@ export async function action (){
 const Root = () => {
 
     const {contacts} = useLoaderData();
-    console.log(contacts)
+    // console.log(contacts)
 
     return (
         <>
