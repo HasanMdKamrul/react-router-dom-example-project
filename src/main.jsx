@@ -1,39 +1,52 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { getContact } from './contacts'
-import ErrorPage from './error-page'
-import './index.css'
-import Contact from './routes/contact'
-import EditContact from './routes/edit'
-import Root, { action as rootAction, loader as rootLoader } from './routes/root'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider
+} from "react-router-dom";
+import { getContact, updateContact } from "./contacts";
+import ErrorPage from "./error-page";
+import "./index.css";
+import Contact from "./routes/contact";
+import EditContact from "./routes/edit";
+import Root, {
+  action as rootAction,
+  loader as rootLoader
+} from "./routes/root";
 
 const router = createBrowserRouter([
   {
-    path:'/',
-    element: <Root/>,
-    errorElement: <ErrorPage/>,
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
     loader: rootLoader,
-    action : rootAction,
-    children:[
+    action: rootAction,
+    children: [
       {
-        path: 'contacts/:contactId',
-        loader : async ({params:{contactId}}) => getContact(contactId),
-        element: <Contact/>
+        path: "contacts/:contactId",
+        loader: async ({ params: { contactId } }) => getContact(contactId),
+        element: <Contact />,
       },
       {
-        path: 'contacts/:contactId/edit',
-        loader : async ({params:{contactId}}) => getContact(contactId),
-        element: <EditContact/>
+        path: "contacts/:contactId/edit",
+        loader: async ({ params: { contactId } }) => getContact(contactId),
+        element: <EditContact />,
+        action: async ({ request, params:{contactId} }) => {
+          const formData = await request.formData();
+          
+          const updates = Object.fromEntries(formData);
+         
+          await updateContact(contactId, updates);
+          return redirect(`/contacts/${contactId}`);
+        },
       },
     ],
   },
+]);
 
-  
-])
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router}/>
+    <RouterProvider router={router} />
   </React.StrictMode>
-)
+);
