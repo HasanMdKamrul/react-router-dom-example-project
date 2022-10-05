@@ -5,6 +5,7 @@ import { getContact } from './contacts'
 import ErrorPage from './error-page'
 import './index.css'
 import Contact from './routes/contact'
+import EditContact from './routes/edit'
 import Root, { action as rootAction, loader as rootLoader } from './routes/root'
 
 const router = createBrowserRouter([
@@ -19,6 +20,11 @@ const router = createBrowserRouter([
         path: 'contacts/:contactId',
         loader : async ({params:{contactId}}) => getContact(contactId),
         element: <Contact/>
+      },
+      {
+        path: 'contacts/:contactId/edit',
+        loader : async ({params:{contactId}}) => getContact(contactId),
+        element: <EditContact/>
       },
     ],
   },
