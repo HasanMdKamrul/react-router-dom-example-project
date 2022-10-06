@@ -23,44 +23,49 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     loader: rootLoader,
     action: rootAction,
-    children: [
+    children : [
       {
-        index : true,
-        // path: '/',
-        element: <Index/>
-      },
-      {
-        path: "contacts/:contactId",
-        loader: async ({ params: { contactId } }) => getContact(contactId),
-        element: <Contact />,
-        action: async ({request,params})=> {
-          let formData = await request.formData();
-          return updateContact(params.contactId, {
-            favorite: formData.get("favorite") === "true",
-          });
-        },
-      },
-      {
-        path: '/contacts/:contactId/destroy',
-        action: async ({params:{contactId}})=> {
-          throw new Error ('Oh Dang!')
-          await deleteContact(contactId);
-          return redirect(`/`);
-        },
-        errorElement: <div>Opps There was an error!</div>
-      },
-      {
-        path: "contacts/:contactId/edit",
-        loader: async ({ params: { contactId } }) => getContact(contactId),
-        element: <EditContact />,
-        action: async ({ request, params:{contactId} }) => {
-          const formData = await request.formData();
-          const updates = Object.fromEntries(formData);
-          await updateContact(contactId, updates);
-          return redirect(`/contacts/${contactId}`);
-        },
-      },
-    ],
+        errorElement : <ErrorPage/>,
+        children: [
+          {
+            index : true,
+            // path: '/',
+            element: <Index/>
+          },
+          {
+            path: "contacts/:contactId",
+            loader: async ({ params: { contactId } }) => getContact(contactId),
+            element: <Contact />,
+            action: async ({request,params})=> {
+              let formData = await request.formData();
+              return updateContact(params.contactId, {
+                favorite: formData.get("favorite") === "true",
+              });
+            },
+          },
+          {
+            path: '/contacts/:contactId/destroy',
+            action: async ({params:{contactId}})=> {
+              throw new Error ('Oh Dang!')
+              await deleteContact(contactId);
+              return redirect(`/`);
+            },
+            errorElement: <div>Opps There was an error!</div>
+          },
+          {
+            path: "contacts/:contactId/edit",
+            loader: async ({ params: { contactId } }) => getContact(contactId),
+            element: <EditContact />,
+            action: async ({ request, params:{contactId} }) => {
+              const formData = await request.formData();
+              const updates = Object.fromEntries(formData);
+              await updateContact(contactId, updates);
+              return redirect(`/contacts/${contactId}`);
+            },
+          },
+        ],
+      }
+    ]
   },
 ]);
 
