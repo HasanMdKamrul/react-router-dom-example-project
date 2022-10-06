@@ -8,6 +8,7 @@ import {
 import { deleteContact, getContact, updateContact } from "./contacts";
 import ErrorPage from "./error-page";
 import "./index.css";
+import Index from "./routes";
 import Contact from "./routes/contact";
 import EditContact from "./routes/edit";
 import Root, {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
     loader: rootLoader,
     action: rootAction,
     children: [
+      {
+        path: '/',
+        element: <Index/>
+      },
       {
         path: "contacts/:contactId",
         loader: async ({ params: { contactId } }) => getContact(contactId),
