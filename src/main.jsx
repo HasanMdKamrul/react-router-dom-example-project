@@ -5,7 +5,7 @@ import {
   redirect,
   RouterProvider
 } from "react-router-dom";
-import { getContact, updateContact } from "./contacts";
+import { deleteContact, getContact, updateContact } from "./contacts";
 import ErrorPage from "./error-page";
 import "./index.css";
 import Contact from "./routes/contact";
@@ -27,6 +27,15 @@ const router = createBrowserRouter([
         path: "contacts/:contactId",
         loader: async ({ params: { contactId } }) => getContact(contactId),
         element: <Contact />,
+      },
+      {
+        path: '/contacts/:contactId/destroy',
+        action: async ({params:{contactId}})=> {
+          throw new Error ('Oh Dang!')
+          await deleteContact(contactId);
+          return redirect(`/`);
+        },
+        errorElement: <div>Opps There was an error!</div>
       },
       {
         path: "contacts/:contactId/edit",
