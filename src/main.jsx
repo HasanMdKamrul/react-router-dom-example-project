@@ -34,9 +34,7 @@ const router = createBrowserRouter([
         element: <EditContact />,
         action: async ({ request, params:{contactId} }) => {
           const formData = await request.formData();
-          
           const updates = Object.fromEntries(formData);
-         
           await updateContact(contactId, updates);
           return redirect(`/contacts/${contactId}`);
         },

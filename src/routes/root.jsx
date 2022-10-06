@@ -1,51 +1,42 @@
-import React from 'react';
-import { Form, Link, Outlet, useLoaderData } from 'react-router-dom';
-import { createContact, getContacts } from '../contacts';
+import React from "react";
+import { Form, Link, Outlet, redirect, useLoaderData } from "react-router-dom";
+import { createContact, getContacts } from "../contacts";
 
-export async function loader (){
-    const contactsArray = await getContacts();
-    return {contacts : contactsArray};
-};
-
-export async function action (){
-     await  createContact();
+export async function loader() {
+  const contactsArray = await getContacts();
+  return { contacts: contactsArray };
 }
 
-
+export async function action() {
+  const contact = await createContact();
+  return redirect(`/contacts/${contact.id}/edit`);
+}
 
 const Root = () => {
+  const { contacts } = useLoaderData();
+  // console.log(contacts)
 
-    const {contacts} = useLoaderData();
-    // console.log(contacts)
-
-    return (
-        <>
-          <div id="sidebar">
-            <h1>React Router Contacts</h1>
-            <div>
-              <form id="search-form" role="search">
-                <input
-                  id="q"
-                  aria-label="Search contacts"
-                  placeholder="Search"
-                  type="search"
-                  name="q"
-                />
-                <div
-                  id="search-spinner"
-                  aria-hidden
-                  hidden={true}
-                />
-                <div
-                  className="sr-only"
-                  aria-live="polite"
-                ></div>
-              </form>
-              <Form method="post">
-                <button type="submit">New</button>
-              </Form>
-            </div>
-            <nav>
+  return (
+    <>
+      <div id="sidebar">
+        <h1>React Router Contacts</h1>
+        <div>
+          <form id="search-form" role="search">
+            <input
+              id="q"
+              aria-label="Search contacts"
+              placeholder="Search"
+              type="search"
+              name="q"
+            />
+            <div id="search-spinner" aria-hidden hidden={true} />
+            <div className="sr-only" aria-live="polite"></div>
+          </form>
+          <Form method="post">
+            <button type="submit">New</button>
+          </Form>
+        </div>
+        <nav>
           {contacts.length ? (
             <ul>
               {contacts.map((contact) => (
@@ -69,13 +60,12 @@ const Root = () => {
             </p>
           )}
         </nav>
-
-          </div>
-          <div id="detail">
-            <Outlet/>
-          </div>
-        </>
-      );
+      </div>
+      <div id="detail">
+        <Outlet />
+      </div>
+    </>
+  );
 };
 
 export default Root;
