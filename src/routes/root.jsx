@@ -1,8 +1,9 @@
 import React from "react";
-import { Form, Link, Outlet, redirect, useLoaderData } from "react-router-dom";
+import { Form, NavLink, Outlet, redirect, useLoaderData, useNavigation } from "react-router-dom";
 import { createContact, getContacts } from "../contacts";
 
 export async function loader() {
+
   const contactsArray = await getContacts();
   return { contacts: contactsArray };
 }
@@ -13,6 +14,11 @@ export async function action() {
 }
 
 const Root = () => {
+
+    const {state} = useNavigation();
+
+    // console.log(navigation)
+
   const { contacts } = useLoaderData();
   // console.log(contacts)
 
@@ -41,7 +47,9 @@ const Root = () => {
             <ul>
               {contacts.map((contact) => (
                 <li key={contact.id}>
-                  <Link to={`contacts/${contact.id}`}>
+                  <NavLink 
+                  className={({isActive,isPending})=> isActive ? "active" : isPending ? 'pending' : ""}
+                  to={`contacts/${contact.id}`}>
                     {contact.first || contact.last ? (
                       <>
                         {contact.first} {contact.last}
@@ -50,7 +58,7 @@ const Root = () => {
                       <i>No Name</i>
                     )}{" "}
                     {contact.favorite && <span>★</span>}
-                  </Link>
+                  </NavLink>
                 </li>
               ))}
             </ul>
@@ -61,7 +69,7 @@ const Root = () => {
           )}
         </nav>
       </div>
-      <div id="detail">
+      <div className={ state === 'loading' ? "loading" : ""}  id="detail">
         <Outlet />
       </div>
     </>
