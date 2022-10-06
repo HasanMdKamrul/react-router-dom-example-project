@@ -25,13 +25,20 @@ const router = createBrowserRouter([
     action: rootAction,
     children: [
       {
-        path: '/',
+        index : true,
+        // path: '/',
         element: <Index/>
       },
       {
         path: "contacts/:contactId",
         loader: async ({ params: { contactId } }) => getContact(contactId),
         element: <Contact />,
+        action: async ({request,params})=> {
+          let formData = await request.formData();
+          return updateContact(params.contactId, {
+            favorite: formData.get("favorite") === "true",
+          });
+        },
       },
       {
         path: '/contacts/:contactId/destroy',

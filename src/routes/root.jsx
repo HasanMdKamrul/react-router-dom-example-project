@@ -1,11 +1,22 @@
-import React from "react";
-import { Form, NavLink, Outlet, redirect, useLoaderData, useNavigation } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+    Form,
+    NavLink,
+    Outlet,
+    redirect,
+    useLoaderData,
+    useNavigation,
+    useSubmit
+} from "react-router-dom";
 import { createContact, getContacts } from "../contacts";
 
-export async function loader() {
+export async function loader({ request }) {
+  const url = new URL(request.url);
 
-  const contactsArray = await getContacts();
-  return { contacts: contactsArray };
+  const q = url.searchParams.get("q");
+
+  const contactsArray = await getContacts(q);
+  return { contacts: contactsArray, q };
 }
 
 export async function action() {
@@ -14,30 +25,44 @@ export async function action() {
 }
 
 const Root = () => {
+  const submit = useSubmit();
 
-    const {state} = useNavigation();
+  const { state, location } = useNavigation();
+    
+//   console.log(location)
 
-    // console.log(navigation)
+//   console.log(new URLSearchParams(location.search))
 
-  const { contacts } = useLoaderData();
+  const searching = location && new URLSearchParams(location.search).has('q');
+
+  // console.log(navigation)
+
+  const { contacts, q } = useLoaderData();
   // console.log(contacts)
+
+  useEffect(() => {
+    document.getElementById("q").value = q;
+  }, [q]);
 
   return (
     <>
       <div id="sidebar">
         <h1>React Router Contacts</h1>
         <div>
-          <form id="search-form" role="search">
+          <Form id="search-form" role="search">
             <input
+            className={searching ? "loading" : ""}
               id="q"
               aria-label="Search contacts"
               placeholder="Search"
               type="search"
               name="q"
+              defaultValue={q}
+              onChange={(event) => submit(event.currentTarget.form)}
             />
-            <div id="search-spinner" aria-hidden hidden={true} />
+            <div hidden={!searching} id="search-spinner" aria-hidden  />
             <div className="sr-only" aria-live="polite"></div>
-          </form>
+          </Form>
           <Form method="post">
             <button type="submit">New</button>
           </Form>
@@ -47,9 +72,12 @@ const Root = () => {
             <ul>
               {contacts.map((contact) => (
                 <li key={contact.id}>
-                  <NavLink 
-                  className={({isActive,isPending})=> isActive ? "active" : isPending ? 'pending' : ""}
-                  to={`contacts/${contact.id}`}>
+                  <NavLink
+                    className={({ isActive, isPending }) =>
+                      isActive ? "active" : isPending ? "pending" : ""
+                    }
+                    to={`contacts/${contact.id}`}
+                  >
                     {contact.first || contact.last ? (
                       <>
                         {contact.first} {contact.last}
@@ -69,7 +97,7 @@ const Root = () => {
           )}
         </nav>
       </div>
-      <div className={ state === 'loading' ? "loading" : ""}  id="detail">
+      <div className={state === "loading" ? "loading" : ""} id="detail">
         <Outlet />
       </div>
     </>
